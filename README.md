@@ -8,8 +8,9 @@
 - Getx
   
 ## Demo Video
-
-![My GIF](video.gif)
+<p align="center">
+  <img src="video.gif" alt="Stylish" style="width: 200px; height: 400px; margin: 0 10px;">&nbsp
+</p>
 
 ## Screenshots
 
