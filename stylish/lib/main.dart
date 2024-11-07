@@ -1,16 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:stylish/Views/Screens/Login.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:stylish/Views/Screens/SplashScreen.dart';
-import 'Views/Screens/Home.dart';
-import 'Views/Screens/OnBoarding.dart';
+import 'ApiKey/ApiKey.dart';
 
-void main() {
-  runApp(const Stylish());
+void main() async {
+  // Ensure Flutter binding is initialized
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
+  await Firebase.initializeApp(
+    options: const FirebaseOptions(
+      apiKey: ApiKey.apiKey,
+      appId: ApiKey.appId,
+      messagingSenderId: ApiKey.messagingSenderId,
+      projectId: ApiKey.projectId,
+    ),
+  );
+
+
+  runApp(Stylish());
 }
 
 class Stylish extends StatefulWidget {
-  const Stylish({super.key});
+  const Stylish({super.key,});
+
 
   @override
   State<Stylish> createState() => _StylishState();

@@ -1,6 +1,8 @@
 import 'package:onboarding_animation/onboarding_animation.dart';
 import 'package:flutter/material.dart';
-
+// import 'package:shared_preferences/shared_preferences.dart';
+import 'package:get/get.dart';
+import 'package:stylish/Views/Screens/Login.dart';
 class Onboarding extends StatefulWidget {
   const Onboarding({super.key});
 
@@ -107,7 +109,15 @@ class _OnboardingState extends State<Onboarding> {
               ),
               Padding(
                 padding: const EdgeInsets.only(right: 15),
-                child: Text(isLastPage ? '' : 'Skip'),
+                child: isLastPage
+                    ? Text('')
+                    :InkWell(
+                      onTap: () async {
+                        // final prefs = await SharedPreferences.getInstance();
+                        // prefs.setBool('isOnboardingCompleted', true);
+                      },
+                      child: Text( 'Skip'),
+                    )
               ),
             ],
           ),
@@ -149,8 +159,10 @@ class _OnboardingState extends State<Onboarding> {
                 padding: const EdgeInsets.only(right: 15,bottom: 10),
                 child: isLastPage
                   ? InkWell(
-                  onTap: (){
-
+                  onTap: () async {
+                    // final prefs = await SharedPreferences.getInstance();
+                    // prefs.setBool('isOnboardingCompleted', true);
+                    Get.off(()=>Login());
                   },
                   child: Text('Get Started'),
                   )

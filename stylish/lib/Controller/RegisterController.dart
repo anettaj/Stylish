@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RegisterController extends GetxController {
   final nameController = TextEditingController();
@@ -65,43 +66,34 @@ class RegisterController extends GetxController {
     }
   }
 
-  // void register() async {
-  //   if (nameError.value.isNotEmpty ||
-  //       emailError.value.isNotEmpty ||
-  //       passwordError.value.isNotEmpty ||
-  //       confirmPasswordError.value.isNotEmpty) {
-  //     // Return if there are any validation errors
-  //     return;
-  //   }
-  //
-  //   isProcessing.value = true;
-  //
-  //   try {
-  //     // Check if email already exists in Firestore
-  //     final usersRef = FirebaseFirestore.instance.collection('Users');
-  //     final existingUser = await usersRef.where('email', isEqualTo: emailController.text).get();
-  //
-  //     if (existingUser.docs.isNotEmpty) {
-  //       emailError.value = 'Email already registered';
-  //     } else {
-  //       // Add new user to Firestore
-  //       await usersRef.add({
-  //         'name': nameController.text,
-  //         'email': emailController.text,
-  //         'userType':'User',
-  //         'password': passwordController.text, // Ideally, hash passwords
-  //       });
-  //       Get.snackbar('Success', 'Registration successful!');
-  //       nameController.clear();
-  //       emailController.clear();
-  //       passwordController.clear();
-  //       confirmPasswordController.clear();
-  //     }
-  //   } catch (e) {
-  //     Get.snackbar('Error', 'Failed to register. Please try again later.');
-  //   } finally {
-  //     isProcessing.value = false;
-  //   }
-  // }
+  void register() async {
+    if (nameError.value.isNotEmpty ||
+        passwordError.value.isNotEmpty ||
+        confirmPasswordError.value.isNotEmpty) {
+      // Return if there are any validation errors
+      return;
+    }
+
+    isProcessing.value = true;
+
+    try {
+      // Check if email already exists in Firestore
+      final usersRef = FirebaseFirestore.instance.collection('Users');
+
+      await usersRef.add({
+        'name': nameController.text,
+        'password': passwordController.text, // Ideally, hash passwords
+      });
+      Get.snackbar('Success', 'Registration successful!');
+      nameController.clear();
+      passwordController.clear();
+      confirmPasswordController.clear();
+    }
+      catch (e) {
+      Get.snackbar('Error', 'Failed to register. Please try again later.');
+    } finally {
+      isProcessing.value = false;
+    }
+  }
 
 }

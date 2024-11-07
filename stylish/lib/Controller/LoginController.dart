@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:stylish/Views/Screens/Home.dart';
 
 class LoginController extends GetxController {
   final emailController = TextEditingController();
@@ -9,10 +9,7 @@ class LoginController extends GetxController {
   final emailError = ''.obs;
   final passwordError = ''.obs;
   final isProcessing = false.obs;
-  final isPasswordVisible = false.obs; // New property for password visibility
-
-  final LoginformKey = GlobalKey<FormState>();
-
+  final isPasswordVisible = false.obs;
 
   // Method to toggle password visibility
   void togglePasswordVisibility() {
@@ -21,7 +18,7 @@ class LoginController extends GetxController {
 
   // Method to handle email input changes
   void onEmailChanged(String value) {
-    if (value.isEmail) {
+    if (value.isNotEmpty) {
       emailError.value = '';
     } else {
       emailError.value = 'Enter a valid email';
@@ -30,79 +27,75 @@ class LoginController extends GetxController {
 
   // Method to handle password input changes
   void onPasswordChanged(String value) {
-    if (value.length >= 6) {
+    if (value.isNotEmpty) {
       passwordError.value = '';
     } else {
       passwordError.value = 'Password must be at least 6 characters';
     }
   }
 
+  // New validateFields method
+  bool validateFields() {
+    bool isValid = true;
+
+    // Validate email
+    if (emailController.text.isEmpty) {
+      emailError.value = 'Email cannot be empty';
+      isValid = false;
+    } else {
+      emailError.value = '';
+    }
+
+    // Validate password
+    if (passwordController.text.isEmpty) {
+      passwordError.value = 'Password cannot be empty';
+      isValid = false;
+    } else if (passwordController.text.length < 6) {
+      passwordError.value = 'Password must be at least 6 characters';
+      isValid = false;
+    } else {
+      passwordError.value = '';
+    }
+
+    return isValid;
+  }
+
   // Login method
+  Future<void> login() async {
+    if (!validateFields()) {
+      return; // Stop login if fields are not valid
+    }
 
-  // Future<void> login() async {
-  //   // Check if email or password fields are empty
-  //   if (emailController.text.isEmpty) {
-  //     emailError.value = 'Email cannot be empty';
-  //     return;
-  //   }
-  //   if (passwordController.text.isEmpty) {
-  //     passwordError.value = 'Password cannot be empty';
-  //     return;
-  //   }
-  //
-  //   // If no errors, proceed with login
-  //   isProcessing.value = true;
-  //
-  //   try {
-  //     // Simulated authentication with Firestore
-  //     final querySnapshot = await FirebaseFirestore.instance
-  //         .collection('Users')
-  //         .where('email', isEqualTo: emailController.text)
-  //         .where('password', isEqualTo: passwordController.text)
-  //         .get();
-  //
-  //     if (querySnapshot.docs.isNotEmpty) {
-  //       final userDoc = querySnapshot.docs.first; // Get the first document
-  //       String userId = userDoc.id; // Get the document ID as userId
-  //       String username = userDoc['name']; // Assuming you have a 'username' field
-  //
-  //       // Proceed to save session and user data
-  //       final prefs = await SharedPreferences.getInstance();
-  //       prefs.setBool('isLoggedIn', true);
-  //       prefs.setString('userEmail', emailController.text);
-  //       prefs.setString('userName', username); // Save username to SharedPreferences
-  //       prefs.setString('userId', userId); // Save userId to SharedPreferences
-  //       if (userDoc['userType']=='Admin'){
-  //         // Navigate to Home page
-  //         Get.offAllNamed('/adminmenu');
-  //       }else{
-  //         // Navigate to Home page
-  //         Get.offAllNamed('/menu');
-  //       }
-  //
-  //
-  //
-  //     } else {
-  //       // User not found
-  //       Get.snackbar('Error', 'Invalid email or password',
-  //           backgroundColor: Colors.red, colorText: Colors.white);
-  //     }
-  //   } catch (e) {
-  //     // Handle any login errors
-  //     Get.snackbar('Error', 'An error occurred during login',
-  //         backgroundColor: Colors.red, colorText: Colors.white);
-  //   } finally {
-  //     isProcessing.value = false;
-  //   }
-  // }
+    isProcessing.value = true;
 
-  // @override
-  // void onClose() {
-  //   emailController.dispose();
-  //   passwordController.dispose();
-  //   super.onClose();
-  // }
-  //
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('Users')
+          .where('name', isEqualTo: emailController.text)
+          .where('password', isEqualTo: passwordController.text)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        Get.off(HomeScreen());
+      } else {
+        Get.snackbar('Error', 'Invalid email or password',
+            backgroundColor: Colors.red, colorText: Colors.white);
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'An error occurred during login',
+          backgroundColor: Colors.red, colorText: Colors.white);
+    } finally {
+      isProcessing.value = false;
+    }
+  }
+
+  @override
+  void onClose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.onClose();
+  }
+
   @override
   void dispose() {
     emailController.dispose();
