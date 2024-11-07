@@ -66,6 +66,45 @@ class RegisterController extends GetxController {
     }
   }
 
+  bool validateFields() {
+    bool isValid = true;
+
+    // Validate username or email
+    if (nameController.text.isEmpty) {
+      nameError.value = 'Username or Email cannot be empty';
+      isValid = false;
+    } else {
+      nameError.value = '';
+    }
+
+    // Validate password
+    if (passwordController.text.isEmpty) {
+      passwordError.value = 'Password cannot be empty';
+      isValid = false;
+    } else if (passwordController.text.length < 6) {
+      passwordError.value =
+      'Password must be at least 6 characters';
+      isValid = false;
+    } else {
+      passwordError.value = '';
+    }
+
+    // Validate confirm password
+    if (confirmPasswordController.text.isEmpty) {
+      confirmPasswordError.value = 'Confirm password cannot be empty';
+      isValid = false;
+    } else if (confirmPasswordController.text !=
+        passwordController.text) {
+      confirmPasswordError.value =
+      'Passwords do not match';
+      isValid = false;
+    } else {
+      confirmPasswordError.value = '';
+    }
+
+    return isValid;
+  }
+
   void register() async {
     if (nameError.value.isNotEmpty ||
         passwordError.value.isNotEmpty ||

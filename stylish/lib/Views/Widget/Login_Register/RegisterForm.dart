@@ -151,7 +151,7 @@ class _RegisterFormState extends State<RegisterForm> {
                 : ElevatedButton(
               onPressed: () {
                 // Trigger manual validation before registering
-                final isValid = validateFields();
+                final isValid = registerController.validateFields();
                 if (isValid) {
                   registerController.register();
                 }
@@ -169,42 +169,5 @@ class _RegisterFormState extends State<RegisterForm> {
     );
   }
 
-  bool validateFields() {
-    bool isValid = true;
 
-    // Validate username or email
-    if (registerController.nameController.text.isEmpty) {
-      registerController.nameError.value = 'Username or Email cannot be empty';
-      isValid = false;
-    } else {
-      registerController.nameError.value = '';
-    }
-
-    // Validate password
-    if (registerController.passwordController.text.isEmpty) {
-      registerController.passwordError.value = 'Password cannot be empty';
-      isValid = false;
-    } else if (registerController.passwordController.text.length < 6) {
-      registerController.passwordError.value =
-      'Password must be at least 6 characters';
-      isValid = false;
-    } else {
-      registerController.passwordError.value = '';
-    }
-
-    // Validate confirm password
-    if (registerController.confirmPasswordController.text.isEmpty) {
-      registerController.confirmPasswordError.value = 'Confirm password cannot be empty';
-      isValid = false;
-    } else if (registerController.confirmPasswordController.text !=
-        registerController.passwordController.text) {
-      registerController.confirmPasswordError.value =
-      'Passwords do not match';
-      isValid = false;
-    } else {
-      registerController.confirmPasswordError.value = '';
-    }
-
-    return isValid;
-  }
 }

@@ -11,14 +11,18 @@ class Onboarding extends StatefulWidget {
 }
 
 class _OnboardingState extends State<Onboarding> {
-  PageController controller = PageController();
+  late PageController _pageController;
   int currentPage = 0;
 
-
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
 
   @override
   void dispose() {
-    controller.dispose();
+    _pageController.dispose(); // Dispose of the controller when the widget is disposed
     super.dispose();
   }
 
@@ -59,7 +63,7 @@ class _OnboardingState extends State<Onboarding> {
               isLastPage: true,
             ),
           ],
-          controller: controller,
+          controller:  _pageController,
           indicatorDotHeight: 7.0,
           indicatorDotWidth: 7.0,
           indicatorType: IndicatorType.expandingDots,
@@ -108,16 +112,17 @@ class _OnboardingState extends State<Onboarding> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(right: 15),
-                child: isLastPage
-                    ? Text('')
-                    :InkWell(
-                      onTap: () async {
-                        // final prefs = await SharedPreferences.getInstance();
-                        // prefs.setBool('isOnboardingCompleted', true);
-                      },
-                      child: Text( 'Skip'),
-                    )
+                  padding: const EdgeInsets.only(right: 15),
+                  child: isLastPage
+                      ? Text('')
+                      :InkWell(
+                    onTap: () async {
+                      Get.off(()=>Login());
+                      // final prefs = await SharedPreferences.getInstance();
+                      // prefs.setBool('isOnboardingCompleted', true);
+                    },
+                    child: Text( 'Skip'),
+                  )
               ),
             ],
           ),
@@ -146,32 +151,34 @@ class _OnboardingState extends State<Onboarding> {
             children: [
               currentPage!=0
                   ? Padding(
-                    padding: const EdgeInsets.only(left: 20,bottom: 10),
-                    child: InkWell(
-                      onTap: (){
-                        controller.previousPage(duration: Duration(microseconds: 8), curve: Curves.easeIn);
-                      },
-                        child: const Text('Prev',style: TextStyle(color: Colors.grey),)
-                    ),
-                  )
+                padding: const EdgeInsets.only(left: 20,bottom: 10),
+                child: InkWell(
+                    onTap: (){
+                      _pageController.previousPage(duration: Duration(microseconds: 8), curve: Curves.easeIn);
+                    },
+                    child: const Text('Prev',style: TextStyle(color: Colors.grey),)
+                ),
+              )
                   :const SizedBox.shrink(),
               Padding(
-                padding: const EdgeInsets.only(right: 15,bottom: 10),
-                child: isLastPage
-                  ? InkWell(
-                  onTap: () async {
-                    // final prefs = await SharedPreferences.getInstance();
-                    // prefs.setBool('isOnboardingCompleted', true);
-                    Get.off(()=>Login());
-                  },
-                  child: Text('Get Started'),
+                  padding: const EdgeInsets.only(right: 15,bottom: 10),
+                  child: isLastPage
+                      ? InkWell(
+                    onTap: () async {
+                      // final prefs = await SharedPreferences.getInstance();
+                      // prefs.setBool('isOnboardingCompleted', true);
+                      Get.off(()=>Login());
+                    },
+                    child: Text('Get Started'),
                   )
-                    :InkWell(
-                  onTap: (){
-                    controller.nextPage(duration: Duration(microseconds: 8), curve: Curves.easeIn);
-                  },
-                  child: Text('Next'),
-                )
+                      :InkWell(
+                    onTap: (){
+                      if ( _pageController.hasClients) {
+                        _pageController.nextPage(duration: Duration(microseconds: 8), curve: Curves.easeIn);
+                      }
+                    },
+                    child: Text('Next'),
+                  )
 
               ),
             ],
